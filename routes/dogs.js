@@ -88,12 +88,8 @@ const deleteDog = (req, res) => {
 const express = require('express')
 const dogRouter = express.Router()
 
-// const foodsRouter = require('./routes/dog-foods.js')
-// app.use('/dogs/:dogId/foods', foodsRouter)
 const foodsRouter = require('./dog-foods.js')
-
-dogRouter.use('/dogs/:dogId/foods', foodsRouter)
-
+dogRouter.use('/:dogId/foods', validateDogId, foodsRouter)
 
 dogRouter.get('/', getAllDogs)
 dogRouter.get('/:dogId', validateDogId, getDogById)
