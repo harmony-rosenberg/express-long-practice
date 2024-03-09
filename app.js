@@ -1,7 +1,12 @@
 const express = require('express');
 require('express-async-errors');
+require('dotenv').config();
+
 const app = express();
 app.use(express.json());
+
+console.log("NODE_ENV:", process.env.NODE_ENV)
+
 
 const logMiddleware = (req, res, next) => {
   console.log(req.method)
@@ -12,6 +17,9 @@ const logMiddleware = (req, res, next) => {
   next()
 }
 app.use(logMiddleware)
+
+const dogRouter = require('./routes/dogs.js')
+app.use('/dogs', dogRouter)
 
 // For testing purposes, GET /
 app.get('/', (req, res) => {
@@ -43,11 +51,23 @@ app.use(errorMiddleWare)
 app.use((err, req, res, next) => {
   let statusCode = err.statusCode || 500
   res.status(statusCode)
-  let message = {
-    message: err.message
+ 
+  let errorResponse ={
+    mesage: err.message || 'Something went wrong',
+    status: statusCode,
+    stack: err.stack
   }
-  res.json(message)
+
+  if(process.env.NODE_ENV === 'production'){
+    errorResponse = {
+      mesage: err.message || 'Something went wrong',
+      status: statusCode,
+    }
+  }
+
+  console.log(err)
+  res.json(errorResponse)
 })
 
-const port = 5000;
+const port = process.env.PORT || 5000;
 app.listen(port, () => console.log('Server is listening on port', port));

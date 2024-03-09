@@ -35,7 +35,7 @@ const validateDogId = (req, res, next) => {
     const err = new Error("Couldn't find dog with that dogId")
     err.statusCode = 404;
     throw err;
-    // return next(err); // alternative to throwing it
+    //  return next(err); // alternative to throwing it
   }
   next();
 }
@@ -85,3 +85,20 @@ const deleteDog = (req, res) => {
 // ------------------------------  ROUTER ------------------------------  
 
 // Your code here 
+const express = require('express')
+const dogRouter = express.Router()
+
+// const foodsRouter = require('./routes/dog-foods.js')
+// app.use('/dogs/:dogId/foods', foodsRouter)
+const foodsRouter = require('./dog-foods.js')
+
+dogRouter.use('/dogs/:dogId/foods', foodsRouter)
+
+
+dogRouter.get('/', getAllDogs)
+dogRouter.get('/:dogId', validateDogId, getDogById)
+dogRouter.post('/', validateDogInfo, createDog)
+dogRouter.put('/:dogId', validateDogId, validateDogInfo, updateDog)
+dogRouter.delete('/:dogId', validateDogId, deleteDog)
+
+module.exports = dogRouter;
